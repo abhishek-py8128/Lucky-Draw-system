@@ -6,7 +6,9 @@ from django.contrib.auth.models import User, Permission, Group
 from django.contrib.auth.decorators import permission_required
 
 def Customer_Registration(request) :
+    
     if request.method == 'POST':
+    
         name = request.POST.get('name')
         mail = request.POST.get('mail')
         pswd = request.POST.get('pswd')
@@ -38,46 +40,55 @@ def login(request) :
 @permission_required('polls.withdraw')
 def opetion_provide(request) :
    
-    # user = User.objects.get(username="abhishek")
-    # permission = Permission.objects.get(codename="withdraw") 
-    # user.user_permissions.add(permission)
+    if request.session.has_key('mail') :
+       
+        # user = User.objects.get(username="abhishek")
+        # permission = Permission.objects.get(codename="withdraw") 
+        # user.user_permissions.add(permission)
     
-    # print(f"Permission {permission} added successfully to user {user.username}.")
-    # print('user permission Adding', user.user_permissions)   
-    # print(user.has_perm("<polls).view_poll"))
+        # print(f"Permission {permission} added successfully to user {user.username}.")
+        # print('user permission Adding', user.user_permissions)   
+        # print(user.has_perm("<polls).view_poll"))
     
-    # Assigning permissions to a group
-    # group = Group.objects.get(name="abhishek")
-    # group.permissions.add(permission)         
-    # return render(request, 'index.html',{'user':request.user.username})
+        # Assigning permissions to a group
+        # group = Group.objects.get(name="abhishek")
+        # group.permissions.add(permission)         
+        # return render(request, 'index.html',{'user':request.user.username})
 
-    mail = request.session['mail'] 
-    Admin_mail = Admins.get_all_Admins_Data()
-    for i in Admin_mail :
-        Admin_mail = i.mail
+        mail = request.session['mail'] 
+        Admin_mail = Admins.get_all_Admins_Data()
+        
+        for i in Admin_mail :
+            Admin_mail = i.mail
     
-    if mail == Admin_mail :
-        return render(request, 'index.html',{'mail':mail})
+        if mail == Admin_mail :
+            return render(request, 'index.html',{'mail':mail})
+        else :
+            return render(request, 'index.html')
     else :
-        return render(request, 'index.html')
+        return redirect(f'/login')    
 
 def get(request) :
     return render(request, 'Enter-Amount.html')
 
 def Amount_view(request) :
 
-    mail = request.session['mail']
-    customer = Registration.objects.filter(mail=mail).first()
+    if request.session.has_key('mail') :
+        mail = request.session['mail']
+        customer = Registration.objects.filter(mail=mail).first()
 
-    name = customer.name
-    amount = request.POST.get('amount')
+        name = customer.name
+        amount = request.POST.get('amount')
 
-    print('customer Details', customer)        
-    print('Actual Amount Is', amount)
-    print('name is',name)
+        print('customer Details', customer)        
+        print('Actual Amount Is', amount)
+        print('name is',name)
 
-    amount = Customer(name=name, amount=amount).save()
-    return redirect(f'/Amount-Deposite')
+        amount = Customer(name=name, amount=amount).save()
+        return redirect(f'/Amount-Deposite')
+    
+    else :
+        return redirect(f'/login')
 
 def Draw(request) :
     mail = request.session['mail']
